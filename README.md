@@ -9,9 +9,9 @@ The project uses `task` to make your life easier. If you're not familiar with Ta
 Chinese zodiac has five elements: wood, fire, earth, metal and water. You can find unlimited number of documents on these.
 Chinese zodiac has three treasures:
 
--jing for the physical body
--qi for the horizontal world: humans, animals, connections, all kinds of energy: eg. breath and food, communication, etc.
--shen for a connection with somewhat spiritual
+- jing for the physical body
+- qi for the horizontal world: humans, animals, connections, all kinds of energy: eg. breath and food, communication, etc.
+- shen for a connection with somewhat spiritual
 
 Every day has an element that effects our life in many ways, in all three levels. This little app shows which ones.
 
