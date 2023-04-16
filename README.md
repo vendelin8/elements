@@ -26,9 +26,9 @@ task run
 ```
 
 Then you can move in the calendar
--a single day by Right and Left cursor key
--one month by Up and Down cursor key
--one year by PageUp and PageDown key
+- a single day by Right and Left cursor key
+- one month by Up and Down cursor key
+- one year by PageUp and PageDown key
 
 It uses local time zone by default. If you want to change that, overwrite `TIMEZONE` at the top of `Taskfile.yml` or call it like that.
 

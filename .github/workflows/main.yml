@@ -62,7 +62,7 @@ jobs:
 
       - name: Runs all tests
         run: |
-          task test
+          task forcetest
           go tool cover -func=coverage.out -o=coverage.out
 
       - name: Go report

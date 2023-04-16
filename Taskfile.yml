@@ -49,6 +49,12 @@ tasks:
       - echo "testing ..."
       - go test -coverprofile coverage.out ./... -v -p 1
 
+  forcetest:
+    deps: [deps]
+    cmds:
+      - echo "testing with sudo to access /dev/uinput for keyboard event testing..."
+      - sudo go test -coverprofile coverage.out ./... -v -p 1
+
   cover:
     cmds:
       - go tool cover -o cov.html -html=coverage.out; sed -i 's/black/whitesmoke/g' cov.html; chromium cov.html
