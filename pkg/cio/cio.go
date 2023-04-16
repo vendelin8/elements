@@ -7,13 +7,14 @@ package cio
 
 import (
 	"fmt"
+	"sync"
 
-	"github.com/eiannone/keyboard"
 	"github.com/gosuri/uilive"
+	"github.com/vendelin8/keyboard"
 )
 
 const (
-	bufferSize = 0
+	bufferSize = 10
 	up         = 1
 	down       = -1
 )
@@ -25,6 +26,8 @@ const (
 	ActLvl2     // dimension 2 actions for Right and Left
 	ActQuit     // quit
 )
+
+var textLock sync.Mutex
 
 // Main maintains a live changing output based on the given callback functions.
 // The first one updates the data to print with two integers. The second one may
@@ -40,6 +43,7 @@ func Main(changer func(int, int), liner func() string, initiated chan<- struct{}
 	w.Start()
 	defer w.Stop()
 	fmt.Fprintln(w, liner())
+	w.Flush()
 	if initiated != nil {
 		initiated <- struct{}{}
 	}
@@ -50,7 +54,10 @@ func Main(changer func(int, int), liner func() string, initiated chan<- struct{}
 			return
 		case ActLvl0, ActLvl1, ActLvl2:
 			changer(act, val)
+			textLock.Lock()
 			fmt.Fprintln(w, liner())
+			w.Flush()
+			textLock.Unlock()
 		}
 	}
 }

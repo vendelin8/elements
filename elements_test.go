@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/fatih/color"
-	"github.com/vendelin8/elements/cio"
+	"github.com/vendelin8/elements/pkg/cio"
 )
 
 // TestParseFlags tests parsing command line arguments to Config.

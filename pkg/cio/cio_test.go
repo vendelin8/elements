@@ -1,19 +1,18 @@
 package cio
 
 import (
-	"fmt"
 	"regexp"
-	"runtime"
 	"strconv"
 	"strings"
 	"sync"
 	"testing"
 	"time"
 
-	"github.com/eiannone/keyboard"
 	"github.com/gosuri/uilive"
-	"github.com/micmonay/keybd_event"
+	"github.com/vendelin8/keyboard"
 )
+
+const bufferDelay = time.Millisecond * 200
 
 // TestDispatchKey tests keyboard handler.
 func TestDispatchKey(t *testing.T) {
@@ -110,8 +109,10 @@ func TestDispatchKey(t *testing.T) {
 	}
 }
 
-// TestMain tests initializing and main loop.
-func TestMain(t *testing.T) {
+// I leave it for a reference. It works fine on my Arch Linux laptop,
+// but fails on Github Actions Ubuntu 22.04.
+// import "github.com/micmonay/keybd_event"
+/*func TestMain(t *testing.T) {
 	kb, err := keybd_event.NewKeyBonding()
 	if err != nil {
 		fmt.Println("initializing keybd_event should NOT have failed, but it did:", err)
@@ -202,5 +203,86 @@ func TestMain(t *testing.T) {
 	if err != nil {
 		t.Errorf("pressing key should NOT have failed, but it did with %v", err)
 	}
+	wg.Wait()
+}*/
+
+// TestMain tests initializing and main loop.
+func TestMain(t *testing.T) {
+	re := regexp.MustCompile(`\d+$`)
+
+	cases := []struct {
+		name string
+		ev   keyboard.KeyEvent
+		want int
+	}{
+		{
+			name: "notUsedRune",
+			ev:   keyboard.KeyEvent{Rune: 'a'},
+			// want: 0 as from the start
+		},
+		{
+			name: "lvl0Up",
+			ev:   keyboard.KeyEvent{Key: keyboard.KeyPgup},
+			want: 4,
+		},
+		{
+			name: "lvl1Up",
+			ev:   keyboard.KeyEvent{Key: keyboard.KeyArrowUp},
+			want: 6,
+		},
+		{
+			name: "notUsedKey",
+			ev:   keyboard.KeyEvent{Key: keyboard.KeyTab},
+			want: 6,
+		},
+		{
+			name: "lvl2Up",
+			ev:   keyboard.KeyEvent{Key: keyboard.KeyArrowRight},
+			want: 7,
+		},
+	}
+
+	current := 0
+	changer := func(act int, value int) {
+		switch act {
+		case ActLvl0:
+			current += value << 2
+		case ActLvl1:
+			current += value << 1
+		case ActLvl2:
+			current += value
+		}
+	}
+	liner := func() string {
+		return strconv.Itoa(current)
+	}
+
+	var b strings.Builder
+	uilive.Out = &b
+	var wg sync.WaitGroup
+	initiated := make(chan struct{})
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		Main(changer, liner, initiated)
+	}()
+
+	<-initiated
+	sendKeys := keyboard.KeysForTesting()
+
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			sendKeys <- c.ev
+			time.Sleep(bufferDelay)
+			wantStr := strconv.Itoa(c.want)
+			textLock.Lock()
+			txt := b.String()
+			textLock.Unlock()
+			if s := re.FindString(strings.TrimSpace(txt)); s != wantStr {
+				t.Errorf("result '%s' doesn't match expected '%s'", s, wantStr)
+			}
+		})
+	}
+	sendKeys <- keyboard.KeyEvent{Key: keyboard.KeyEsc}
 	wg.Wait()
 }

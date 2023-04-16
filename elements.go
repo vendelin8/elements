@@ -11,8 +11,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/vendelin8/elements/cio"
-	"github.com/vendelin8/elements/model"
+	"github.com/vendelin8/elements/pkg/cio"
+	"github.com/vendelin8/elements/pkg/model"
 )
 
 // visibleDay is the date currently shown.

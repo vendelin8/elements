@@ -2,7 +2,7 @@ version: '3'
 
 vars:
   TIMEZONE: "'-'"
-  GOLANGCI_VERSION: 1.51.2
+  GOLANGCI_VERSION: 1.52.2
 
 tasks:
   help:
@@ -11,7 +11,7 @@ tasks:
 
   deps:
     cmds:
-      - go get ./...
+      - go mod tidy
 
   golanci-lint:
     cmds:
@@ -25,7 +25,7 @@ tasks:
   lint:
     deps: [golanci-lint]
     cmds:
-        - .bin/golangci-lint-{{.GOLANGCI_VERSION}} run --skip-dirs "i18n|custom"
+        - .bin/golangci-lint-{{.GOLANGCI_VERSION}} run
 
   lint-reports:
     generates:
@@ -47,13 +47,7 @@ tasks:
     deps: [deps]
     cmds:
       - echo "testing ..."
-      - go test -coverprofile coverage.out ./... -v -p 1
-
-  forcetest:
-    deps: [deps]
-    cmds:
-      - echo "testing with sudo to access /dev/uinput for keyboard event testing..."
-      - sudo go test -coverprofile coverage.out ./... -v -p 1
+      - go test -coverprofile coverage.out ./... -v -timeout 90s
 
   cover:
     cmds:
