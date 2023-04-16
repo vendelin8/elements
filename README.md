@@ -1,4 +1,5 @@
 ## Elements
+[![Go Report Card](https://goreportcard.com/badge/github.com/vendelin8/elements)](https://goreportcard.com/report/github.com/vendelin8/elements)
 
 elements is a CLI tool to show Chinese zodiac five elements as a pageable calendar, written in Golang
 
